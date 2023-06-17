@@ -2,6 +2,11 @@ const vscode = require('vscode');
 const fs = require("fs");
 const path = require('path');
 
+function getUserNotesFilePath(){
+	const t = vscode.workspace.workspaceFolders;
+	const p = path.join(t[0].uri.fsPath, "/.vscode/magicNotes.json");
+	return(p)
+}
 function getLocalData() {
 	const t = vscode.workspace.workspaceFolders;
 	try {
@@ -41,15 +46,10 @@ function setupCode() {
 	} catch (err) { return (false) }
 }
 function createNewNote(data) {
-	const t = vscode.workspace.workspaceFolders;
-	const dir = path.join(t[0].uri.fsPath, "/.vscode/");
-	try {
-		fs.writeFileSync(dir + "/magicNotes.json", JSON.stringify([{ name: "Hello World" }]))
-	}
-	catch (err) {
-		return (false)
-	}
-	return (true)
+	const local = getLocalData();
+	local.push(data);
+	console.log(local)
+	fs.writeFileSync(getUserNotesFilePath(), local, "utf8")
 }
 function loadHTML() {
 	const p = path.join(__dirname, "/app/index.html");
@@ -66,6 +66,12 @@ function openWebView(data) {
 	})
 	panel.webview.html = loadHTML();
 	panel.webview.onDidReceiveMessage((message) => {
+		const {type,data} = message
+		switch(type){
+			case type=="create-new-note":
+				createNewNote(data);
+				return;
+		}
 		console.log("Recieved: ", message)
 	})
 	panel.webview.postMessage(data);
