@@ -96,7 +96,11 @@
                 const val = i.getValue()
                 console.log("Data: ",val)
                 vscode.postMessage(val, "*");
-                notesList.addChild(createNotesItem({name:val}))
+                const formatted = {
+                    type:"create-new-note",
+                    data:{name:val}
+                }
+                notesList.addChild(createNotesItem(formatted))
             })
         </script>
     </body>
