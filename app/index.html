@@ -69,36 +69,37 @@
                     this.dom.addEventListener(type, callback);
                     return (this);
                 }
-                getValue(){
-                    return(this.dom.value)
+                getValue() {
+                    return (this.dom.value)
                 }
             }
 
             const notesList = $.get("#notes-list");
 
-            function createNotesItem(data){
+            function createNotesItem(data) {
                 const tab = new $()
-                .addClass("note-item")
-                .addChild(
-                    new $("h2").setText(data.name)
-                )
-                return(tab);
+                    .addClass("note-item")
+                    .addChild(
+                        new $("h2").setText(data.name)
+                    )
+                return (tab);
             }
+
             window.addEventListener("message", (e) => {
-                const {data} = e;
-                data.forEach((val)=>{
+                const { data } = e;
+                data.forEach((val) => {
                     notesList.addChild(createNotesItem(val))
-                }) 
+                })
             })
-            
+
             const i = $.get("#new-note-name")
-            const btn = $.get("#add-new-note-button").addEvent("click",()=>{
+            const btn = $.get("#add-new-note-button").addEvent("click", () => {
                 const val = i.getValue()
-                console.log("Data: ",val)
+                console.log("Data: ", val)
                 vscode.postMessage(val, "*");
                 const formatted = {
-                    type:"create-new-note",
-                    data:{name:val}
+                    type: "create-new-note",
+                    data: { name: val }
                 }
                 notesList.addChild(createNotesItem(formatted))
             })
