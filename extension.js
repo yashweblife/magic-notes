@@ -32,18 +32,39 @@ function checkIfDataExists() {
 	}
 }
 function setupCode() {
+	console.log("Running Setup Workspace")
 	const t = vscode.workspace.workspaceFolders;
 	const dir = path.join(t[0].uri.fsPath, "/.vscode/");
-	try {
-		fs.mkdirSync(dir)
-		try {
-			fs.writeFileSync(dir + "/magicNotes.json", JSON.stringify([{ name: "Hello World" }]))
+	console.log(`Creating magicNotes.json in ${dir}`)
+	fs.stat(dir, (err, stats)=>{
+		if(err){
+			console.log(`Error Creating File In Invalid Directory: ${err}`);
+			try {
+				console.log(`Attempting to create directory`);
+				fs.mkdirSync(dir)
+				try {
+					fs.writeFileSync(dir + "/magicNotes.json", JSON.stringify([{ name: "Hello World" }]))
+				}
+				catch (err) {
+					vscode.window.showErrorMessage(err)
+					return (false)
+				}
+				return (true)
+			} catch (err) {
+				vscode.window.showErrorMessage(err)
+				return (false)
+			}
 		}
-		catch (err) {
-			return (false)
+		if(stats.isDirectory()){
+			console.log(`${dir} is a valid directory`)
+			try {
+				console.log(`Creating file`)
+				fs.writeFileSync(dir + "/magicNotes.json", JSON.stringify([{ name: "Hello World" }]))
+			}catch(err){
+				console.log(`Error Creating File: ${err}`)
+			}
 		}
-		return (true)
-	} catch (err) { return (false) }
+	})
 }
 function createNewNote(data) {
 	console.log("Creating New Note")
@@ -81,9 +102,11 @@ function openWebView(data) {
 function activate(context) {
 	let disposable = vscode.commands.registerCommand('magic-notes.open', function () {
 		if (checkIfDataExists()) {
+			console.log("Check Works")
 			const data = getLocalData()
 			openWebView(data)
 		} else {
+			console.log("Check Failed")
 			setupCode()
 		}
 	});
