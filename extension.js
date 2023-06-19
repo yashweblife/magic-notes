@@ -36,8 +36,8 @@ function setupCode() {
 	const t = vscode.workspace.workspaceFolders;
 	const dir = path.join(t[0].uri.fsPath, "/.vscode/");
 	console.log(`Creating magicNotes.json in ${dir}`)
-	fs.stat(dir, (err, stats)=>{
-		if(err){
+	fs.stat(dir, (err, stats) => {
+		if (err) {
 			console.log(`Error Creating File In Invalid Directory: ${err}`);
 			try {
 				console.log(`Attempting to create directory`);
@@ -55,12 +55,12 @@ function setupCode() {
 				return (false)
 			}
 		}
-		if(stats.isDirectory()){
+		if (stats.isDirectory()) {
 			console.log(`${dir} is a valid directory`)
 			try {
 				console.log(`Creating file`)
 				fs.writeFileSync(dir + "/magicNotes.json", JSON.stringify([{ name: "Hello World" }]))
-			}catch(err){
+			} catch (err) {
 				console.log(`Error Creating File: ${err}`)
 			}
 		}
